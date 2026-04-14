@@ -139,21 +139,13 @@ header h1 {
 }
 
 .square.piece-black {
-    color: #1a1a1a;
-    text-shadow: 0 0 1px #000, 0 0 2px #000;
+    color: #222;
+    -webkit-text-stroke: 0px;
 }
 
 .square.piece-white {
     color: #fff;
-    text-shadow:
-        -1px -1px 0 #333,
-         1px -1px 0 #333,
-        -1px  1px 0 #333,
-         1px  1px 0 #333,
-         0   -1px 0 #333,
-         0    1px 0 #333,
-        -1px  0   0 #333,
-         1px  0   0 #333;
+    -webkit-text-stroke: 1px #333;
 }
 
 .square:hover {
