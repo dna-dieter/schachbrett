@@ -95,6 +95,8 @@ header h1 {
     align-items: center;
     justify-content: center;
     font-size: 46px;
+    font-family: 'DejaVu Sans', 'Noto Sans Symbols 2', 'Segoe UI Symbol', 'Arial Unicode MS', sans-serif;
+    font-variant-emoji: text;
     cursor: pointer;
     position: relative;
     user-select: none;
@@ -139,12 +141,15 @@ header h1 {
 }
 
 .square.piece-black {
-    color: #222;
+    -webkit-text-fill-color: #111;
+    -webkit-text-stroke: 1px #111;
+    color: #111;
 }
 
 .square.piece-white {
-    color: #fff;
+    -webkit-text-fill-color: #fff;
     -webkit-text-stroke: 0.5px #333;
+    color: #fff;
 }
 
 .square:hover {
