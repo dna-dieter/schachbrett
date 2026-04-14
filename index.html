@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fernschach</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="app">
+        <header>
+            <h1>Fernschach</h1>
+            <div class="status" id="status">Weiss am Zug</div>
+        </header>
+        <div class="main">
+            <div class="board-container">
+                <div class="board" id="board"></div>
+                <div class="coords-bottom" id="coords-bottom"></div>
+                <div class="coords-left" id="coords-left"></div>
+            </div>
+            <div class="sidebar">
+                <div class="panel moves-panel">
+                    <h2>Zughistorie</h2>
+                    <div class="moves-list" id="moves-list">
+                        <div class="moves-placeholder">Noch keine Zuege</div>
+                    </div>
+                </div>
+                <div class="panel input-panel">
+                    <h2>Neuer Zug</h2>
+                    <div class="input-group">
+                        <input type="text" id="move-input" placeholder="z.B. e2-e4 oder Nf3" autocomplete="off">
+                        <button id="move-btn">Ziehen</button>
+                    </div>
+                    <div class="input-help">
+                        Formate: <strong>e2-e4</strong>, <strong>e2e4</strong> oder <strong>Nf3</strong>, <strong>O-O</strong>
+                    </div>
+                    <div class="error" id="error"></div>
+                </div>
+                <div class="panel actions-panel">
+                    <button id="undo-btn" title="Letzten Zug zuruecknehmen">Zug zurueck</button>
+                    <button id="reset-btn" title="Neues Spiel starten">Neues Spiel</button>
+                    <button id="flip-btn" title="Brett drehen">Brett drehen</button>
+                    <button id="export-btn" title="Zugliste kopieren">Zugliste kopieren</button>
+                    <button id="fen-btn" title="FEN kopieren">FEN kopieren</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="chess.js"></script>
+</body>
+</html>
