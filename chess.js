@@ -1,12 +1,12 @@
 // ─── Fernschach Engine ───────────────────────────────────────────
 
 const PIECES = {
-    K: { white: '\u2654', black: '\u265A', name: 'Koenig' },
-    Q: { white: '\u2655', black: '\u265B', name: 'Dame' },
-    R: { white: '\u2656', black: '\u265C', name: 'Turm' },
-    B: { white: '\u2657', black: '\u265D', name: 'Laeufer' },
-    N: { white: '\u2658', black: '\u265E', name: 'Springer' },
-    P: { white: '\u2659', black: '\u265F', name: 'Bauer' }
+    K: { white: '\u265A', black: '\u265A', name: 'Koenig' },
+    Q: { white: '\u265B', black: '\u265B', name: 'Dame' },
+    R: { white: '\u265C', black: '\u265C', name: 'Turm' },
+    B: { white: '\u265D', black: '\u265D', name: 'Laeufer' },
+    N: { white: '\u265E', black: '\u265E', name: 'Springer' },
+    P: { white: '\u265F', black: '\u265F', name: 'Bauer' }
 };
 
 const FILES = 'abcdefgh';
