@@ -616,6 +616,85 @@ class ChessGame {
 }
 
 
+// ─── Firebase Sync ───────────────────────────────────────────────
+
+const firebaseConfig = {
+    apiKey: "AIzaSyC_YhCKhA-cXlfNfdr9hgoWFm3hf0f78Lk",
+    authDomain: "schach-mit-joerg.firebaseapp.com",
+    projectId: "schach-mit-joerg",
+    storageBucket: "schach-mit-joerg.firebasestorage.app",
+    messagingSenderId: "58216476791",
+    appId: "1:58216476791:web:c9ac721bdbf0b4d2065672",
+    databaseURL: "https://schach-mit-joerg-default-rtdb.europe-west1.firebasedatabase.app"
+};
+
+class FirebaseSync {
+    constructor(onUpdate) {
+        this.onUpdate = onUpdate;
+        this.db = null;
+        this.gameRef = null;
+        this.connected = false;
+        this.ignoreNext = false;
+        this.init();
+    }
+
+    init() {
+        try {
+            const app = firebase.initializeApp(firebaseConfig);
+            this.db = firebase.database();
+            this.gameRef = this.db.ref('games/default');
+
+            // Connection status
+            this.db.ref('.info/connected').on('value', (snap) => {
+                this.connected = snap.val() === true;
+                this.updateStatusUI();
+            });
+
+            // Listen for changes from other players
+            this.gameRef.on('value', (snap) => {
+                if (this.ignoreNext) {
+                    this.ignoreNext = false;
+                    return;
+                }
+                const data = snap.val();
+                if (data && this.onUpdate) {
+                    this.onUpdate(data);
+                }
+            });
+        } catch (e) {
+            console.error('Firebase init error:', e);
+            this.updateStatusUI();
+        }
+    }
+
+    save(moves) {
+        if (!this.gameRef) return;
+        this.ignoreNext = true;
+        const data = {
+            moves: moves.map(m => ({
+                fr: m.fr, fc: m.fc, tr: m.tr, tc: m.tc,
+                special: m.special || null, notation: m.notation
+            })),
+            updatedAt: Date.now(),
+            moveCount: moves.length
+        };
+        this.gameRef.set(data);
+    }
+
+    updateStatusUI() {
+        const el = document.getElementById('sync-status');
+        if (!el) return;
+        if (this.connected) {
+            el.textContent = 'Online';
+            el.className = 'sync-status online';
+        } else {
+            el.textContent = 'Offline';
+            el.className = 'sync-status offline';
+        }
+    }
+}
+
+
 // ─── UI ──────────────────────────────────────────────────────────
 
 class ChessUI {
@@ -635,6 +714,9 @@ class ChessUI {
         this.setupCoords();
         this.setupEvents();
         this.render();
+
+        // Firebase sync
+        this.sync = new FirebaseSync((data) => this.onFirebaseUpdate(data));
         this.loadFromStorage();
     }
 
@@ -907,19 +989,22 @@ class ChessUI {
     }
 
     saveToStorage() {
+        const moves = this.game.moveHistory.map(m => ({
+            fr: m.fr, fc: m.fc, tr: m.tr, tc: m.tc,
+            special: m.special || null, notation: m.notation
+        }));
         try {
-            const data = {
-                moves: this.game.moveHistory.map(m => ({
-                    fr: m.fr, fc: m.fc, tr: m.tr, tc: m.tc,
-                    special: m.special, notation: m.notation
-                })),
-                fen: this.game.toFEN()
-            };
-            localStorage.setItem('fernschach', JSON.stringify(data));
+            localStorage.setItem('fernschach', JSON.stringify({ moves, fen: this.game.toFEN() }));
         } catch (e) { /* ignore */ }
+        // Sync to Firebase
+        if (this.sync) {
+            this.sync.save(this.game.moveHistory);
+        }
     }
 
     loadFromStorage() {
+        // Don't load from localStorage if Firebase has data (Firebase takes priority)
+        // localStorage is only a fallback for offline mode
         try {
             const raw = localStorage.getItem('fernschach');
             if (!raw) return;
@@ -932,6 +1017,28 @@ class ChessUI {
                 if (!result) break;
             }
             this.render();
+        } catch (e) { /* ignore */ }
+    }
+
+    onFirebaseUpdate(data) {
+        if (!data || !data.moves) return;
+        const moves = data.moves;
+
+        // Replay all moves from Firebase
+        this.game.reset();
+        for (const m of moves) {
+            const result = this.game.makeMove(m.fr, m.fc, m.tr, m.tc, m.special || null);
+            if (!result) break;
+        }
+        this.selectedSquare = null;
+        this.validMoves = [];
+        this.render();
+
+        // Update localStorage
+        try {
+            localStorage.setItem('fernschach', JSON.stringify({
+                moves, fen: this.game.toFEN()
+            }));
         } catch (e) { /* ignore */ }
     }
 }

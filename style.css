@@ -38,6 +38,23 @@ header h1 {
     font-weight: 600;
 }
 
+.sync-status {
+    font-size: 0.8rem;
+    padding: 4px 12px;
+    border-radius: 12px;
+    font-weight: 600;
+}
+
+.sync-status.online {
+    background: #27ae60;
+    color: #fff;
+}
+
+.sync-status.offline {
+    background: #e74c3c;
+    color: #fff;
+}
+
 .status.white-turn {
     color: #fff;
     border: 2px solid #e8d5b5;
