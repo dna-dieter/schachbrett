@@ -123,6 +123,46 @@ header h1 {
     flex-shrink: 0;
 }
 
+.flip-overlay {
+    position: absolute;
+    top: 0; left: 0;
+    width: 520px; height: 520px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(10, 15, 30, 0.72);
+    color: #e8d5b5;
+    font-size: 1.8rem;
+    font-weight: 700;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    border-radius: 4px;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.35s ease;
+    z-index: 20;
+}
+.flip-overlay.show { opacity: 1; }
+.flip-overlay::before {
+    content: '↻';
+    font-size: 2.4rem;
+    margin-right: 14px;
+    display: inline-block;
+    animation: flip-spin 1.2s linear infinite;
+}
+@keyframes flip-spin {
+    from { transform: rotate(0deg); }
+    to   { transform: rotate(360deg); }
+}
+
+@media (max-width: 700px) {
+    .flip-overlay {
+        width: min(520px, 95vw);
+        height: min(520px, 95vw);
+        font-size: 1.3rem;
+    }
+}
+
 .board {
     display: grid;
     grid-template-columns: repeat(8, 1fr);

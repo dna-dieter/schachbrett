@@ -787,6 +787,7 @@ class ChessUI {
         // Theory panel
         this.theory = new TheoryPanel(this);
 
+        this._loading = true;
         this.render();
 
         // Berlin clock tick
@@ -796,6 +797,9 @@ class ChessUI {
         // Firebase sync
         this.sync = new FirebaseSync((data) => this.onFirebaseUpdate(data));
         this.loadFromStorage();
+
+        // Enable flip-animation once initial loads have settled
+        setTimeout(() => { this._loading = false; }, 1800);
     }
 
     setupBoard() {
@@ -866,10 +870,33 @@ class ChessUI {
     autoFlip() {
         if (this.manualFlip) return;
         const want = this.game.turn === 'black';
-        if (want !== this.flipped) {
+        if (want === this.flipped) return;
+
+        // During initial load (constructor + first Firebase callback): flip silently
+        if (this._loading) {
             this.flipped = want;
             this.updateCoords();
+            return;
         }
+
+        // Avoid stacking animations
+        if (this._flipping) return;
+        this._flipping = true;
+
+        const overlay = document.getElementById('flip-overlay');
+        // Phase 1: 1s delay with piece on its final square
+        setTimeout(() => {
+            if (overlay) overlay.classList.add('show');
+            // Phase 2: 2s overlay, then rotate
+            setTimeout(() => {
+                this.flipped = want;
+                this.updateCoords();
+                this.renderBoard();
+                if (this.analysis) this.analysis.onMainUpdated();
+                if (overlay) overlay.classList.remove('show');
+                this._flipping = false;
+            }, 2000);
+        }, 1000);
     }
 
     toBoardIndex(row, col) {
