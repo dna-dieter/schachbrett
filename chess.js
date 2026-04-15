@@ -719,11 +719,12 @@ function berlinParts(date) {
 
 // Interpret (y,m,d,h,mi,s) as Europe/Berlin wall-clock time, return UTC Date
 function berlinWallToDate(y, m, d, h, mi, s) {
-    let utc = Date.UTC(y, m - 1, d, h, mi, s);
+    const targetUTC = Date.UTC(y, m - 1, d, h, mi, s);
+    let utc = targetUTC;
     for (let i = 0; i < 3; i++) {
         const p = berlinParts(new Date(utc));
-        const seen = Date.UTC(p.year, p.month - 1, p.day, p.hour, p.minute, p.second);
-        const diff = seen - utc;
+        const seenUTC = Date.UTC(p.year, p.month - 1, p.day, p.hour, p.minute, p.second);
+        const diff = seenUTC - targetUTC;
         if (diff === 0) break;
         utc -= diff;
     }
