@@ -1053,7 +1053,8 @@ class ChessUI {
         this.renderMoveList();
         this.tickClocks();
         if (this.analysis) this.analysis.onMainUpdated();
-        if (this.theory) this.theory.refresh(this.game.toFEN());
+        // Theory follows the analysis board (after onMainUpdated it mirrors main)
+        if (this.theory && this.analysis) this.theory.refresh(this.analysis.game.toFEN());
     }
 
     tickClocks() {
@@ -1504,6 +1505,18 @@ class AnalysisUI {
         }
         const t = document.getElementById('analysis-turn');
         if (t) t.textContent = (this.game.turn === 'white' ? 'Weiss' : 'Schwarz') + ' am Zug';
+
+        // Refresh theory for the new analysis FEN
+        if (this.main && this.main.theory) this.main.theory.refresh(this.game.toFEN());
+    }
+
+    applySan(san) {
+        const res = this.game.parseAndMakeMove(san);
+        if (res && res.error) return false;
+        this.selected = null;
+        this.validMoves = [];
+        this.render();
+        return true;
     }
 }
 
@@ -1569,30 +1582,39 @@ class TheoryPanel {
         const moves = data.moves.slice(0, 5);
         this.listEl.innerHTML = '';
         for (const m of moves) {
-            const wr = parseFloat(m.winrate);
             const cp = Number(m.score) || 0;
-            // Logistic expected-score from cp (Elo-style): W = 1 / (1 + 10^(-cp/400))
-            const ws = 1 / (1 + Math.pow(10, -cp / 400));
-            const wsPct = ws * 100;
-            const bsPct = 100 - wsPct;
-            const note = (m.note || '').trim();
+            const rank = Number(m.rank);
+            // Extract annotation symbol only (strip "(YY-MM)" date code)
+            const rawNote = (m.note || '').trim();
+            const symMatch = rawNote.match(/^([!*?]+)/);
+            const sym = symMatch ? symMatch[1] : '';
+
+            // Row class from rank
+            let rankClass = 'rank-neutral';
+            if (rank >= 2) rankClass = 'rank-best';
+            else if (rank === 1) rankClass = 'rank-ok';
+            else if (rank === 0) rankClass = (cp < -50 ? 'rank-bad' : 'rank-weak');
+
+            // cp color class
+            let cpClass = 'cp-zero';
+            if (cp > 20) cpClass = 'cp-good';
+            else if (cp < -20) cpClass = 'cp-bad';
+
             const scoreLabel = (cp > 0 ? '+' : '') + cp + ' cp';
+            const wr = parseFloat(m.winrate);
             const wrLabel = isFinite(wr) ? wr.toFixed(2) + '%' : '';
+
             const row = document.createElement('div');
-            row.className = 'theory-row';
-            row.title = `${m.san} ${note}  |  Score ${scoreLabel}  |  Erwartung Weiss ${wsPct.toFixed(1)}%  |  DB-Winrate ${wrLabel}`;
+            row.className = 'theory-row ' + rankClass;
+            row.title = `${m.san} ${sym}  |  Score ${scoreLabel}  |  DB-Winrate ${wrLabel}`;
             row.innerHTML = `
-                <div class="theory-san">${m.san} <span style="color:#aaa;font-weight:400">${note}</span></div>
-                <div class="theory-games">${scoreLabel}</div>
-                <div class="theory-bar eval">
-                    <div class="bw" style="width:${wsPct}%"></div>
-                    <div class="bb" style="width:${bsPct}%"></div>
-                    <span class="eval-label">${scoreLabel}</span>
-                </div>
+                <div class="theory-san">${m.san} <span class="theory-sym">${sym}</span></div>
+                <div class="theory-cp ${cpClass}">${scoreLabel}</div>
+                <button class="theory-check" type="button">Prüfen</button>
             `;
-            row.addEventListener('click', () => {
-                const inp = document.getElementById('move-input');
-                if (inp) { inp.value = m.san; inp.focus(); }
+            row.querySelector('.theory-check').addEventListener('click', (e) => {
+                e.stopPropagation();
+                if (this.main.analysis) this.main.analysis.applySan(m.san);
             });
             this.listEl.appendChild(row);
         }
@@ -1613,22 +1635,17 @@ class TheoryPanel {
         this.listEl.innerHTML = '';
         for (const m of top) {
             const games = m.white + m.draws + m.black;
-            const pct = n => games ? Math.round(n / games * 100) : 0;
             const row = document.createElement('div');
-            row.className = 'theory-row';
-            row.title = `${m.san}: ${games} Partien, Weiss ${pct(m.white)}% / Remis ${pct(m.draws)}% / Schwarz ${pct(m.black)}%`;
+            row.className = 'theory-row rank-ok';
+            row.title = `${m.san}: ${games} Partien`;
             row.innerHTML = `
                 <div class="theory-san">${m.san}</div>
-                <div class="theory-games">${games.toLocaleString('de-DE')} P.</div>
-                <div class="theory-bar">
-                    <div class="bw" style="width:${pct(m.white)}%"><span>${pct(m.white)}%</span></div>
-                    <div class="bd" style="width:${pct(m.draws)}%"><span>${pct(m.draws)}%</span></div>
-                    <div class="bb" style="width:${pct(m.black)}%"><span>${pct(m.black)}%</span></div>
-                </div>
+                <div class="theory-cp cp-zero">${games.toLocaleString('de-DE')} P.</div>
+                <button class="theory-check" type="button">Prüfen</button>
             `;
-            row.addEventListener('click', () => {
-                const inp = document.getElementById('move-input');
-                if (inp) { inp.value = m.san; inp.focus(); }
+            row.querySelector('.theory-check').addEventListener('click', (e) => {
+                e.stopPropagation();
+                if (this.main.analysis) this.main.analysis.applySan(m.san);
             });
             this.listEl.appendChild(row);
         }

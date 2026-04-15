@@ -413,46 +413,47 @@ header h1 {
 .theory-list { display: flex; flex-direction: column; gap: 6px; }
 .theory-row {
     display: grid;
-    grid-template-columns: 150px 70px 1fr;
-    gap: 12px;
+    grid-template-columns: 1fr 90px 90px;
+    gap: 14px;
     align-items: center;
-    padding: 8px 10px;
+    padding: 10px 12px;
     background: #1a2342;
     border-radius: 6px;
     border: 1px solid #23305a;
+    border-left: 5px solid #7a7a8a;
     font-family: 'SF Mono', 'Fira Code', Consolas, monospace;
-    cursor: pointer;
     transition: background 0.15s;
 }
-.theory-san { white-space: nowrap; }
 .theory-row:hover { background: #253463; }
-.theory-san { color: #e8d5b5; font-weight: 700; font-size: 0.95rem; }
-.theory-games { color: #888; font-size: 0.78rem; text-align: right; }
-.theory-bar {
-    height: 16px; display: flex; overflow: hidden;
-    border-radius: 3px; background: #0e1530;
-    position: relative;
+.theory-san { color: #e8d5b5; font-weight: 700; font-size: 0.95rem; white-space: nowrap; }
+.theory-sym { color: #aaa; font-weight: 400; margin-left: 4px; }
+
+/* Rank color accents on the left border */
+.theory-row.rank-best { border-left-color: #27ae60; }
+.theory-row.rank-ok { border-left-color: #7a7a8a; }
+.theory-row.rank-neutral { border-left-color: #5a5a7a; }
+.theory-row.rank-weak { border-left-color: #e67e22; }
+.theory-row.rank-bad { border-left-color: #c0392b; }
+
+.theory-cp { font-size: 0.88rem; font-weight: 700; text-align: right; }
+.theory-cp.cp-good { color: #2ecc71; }
+.theory-cp.cp-zero { color: #bbb; }
+.theory-cp.cp-bad { color: #e74c3c; }
+
+.theory-check {
+    padding: 6px 10px;
+    background: #e8d5b5;
+    color: #1a1a2e;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 0.82rem;
+    font-weight: 700;
+    font-family: inherit;
+    transition: background 0.15s;
 }
-.theory-bar .bw { background: #f0d9b5; }
-.theory-bar .bd { background: #7a7a8a; }
-.theory-bar .bb { background: #2a2a3a; }
-.theory-bar .eval-label {
-    position: absolute;
-    left: 50%; top: 50%; transform: translate(-50%, -50%);
-    font-size: 0.72rem; font-weight: 700;
-    color: #e8d5b5;
-    text-shadow: 0 0 3px #000, 0 0 2px #000;
-    pointer-events: none;
-    white-space: nowrap;
-}
-/* Center tick mark at 50% for evaluation bar */
-.theory-bar.eval::before {
-    content: '';
-    position: absolute;
-    left: 50%; top: -2px; bottom: -2px;
-    width: 1px; background: #555;
-    pointer-events: none;
-}
+.theory-check:hover { background: #d4c1a0; }
+.theory-check:active { background: #b8a487; }
 
 /* Responsive */
 @media (max-width: 1200px) {
