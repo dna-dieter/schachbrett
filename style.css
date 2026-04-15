@@ -63,7 +63,7 @@ header h1 {
 
 .main {
     display: grid;
-    grid-template-columns: 240px auto 1fr;
+    grid-template-columns: 360px auto 1fr;
     gap: 24px;
     align-items: flex-start;
 }
@@ -104,12 +104,33 @@ header h1 {
     font-family: 'SF Mono', 'Fira Code', Consolas, monospace;
 }
 .chessclock-panel .clock-row:last-child { border-bottom: 0; }
-.chessclock-panel .clock-row.big { padding: 10px 0 6px; }
 .chessclock-panel .clock-label { font-size: 0.75rem; color: #888; text-transform: uppercase; letter-spacing: 0.5px; }
 .chessclock-panel .clock-value { font-size: 0.85rem; color: #ddd; }
-.chessclock-panel .countdown { font-size: 1.05rem; font-weight: 700; color: #e8d5b5; }
-.chessclock-panel .countdown.expired { color: #e74c3c; }
-.chessclock-panel .countdown.urgent { color: #f39c12; }
+
+.clock-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    padding: 8px 0;
+    border-bottom: 1px solid #2a2a4a;
+}
+.clock-grid.top { padding-top: 10px; }
+.clock-cell {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    font-family: 'SF Mono', 'Fira Code', Consolas, monospace;
+}
+.clock-cell .clock-label {
+    font-size: 0.7rem; color: #888;
+    text-transform: uppercase; letter-spacing: 0.5px;
+}
+.clock-cell .clock-value { font-size: 0.9rem; color: #ddd; }
+.clock-cell.big .clock-value.countdown {
+    font-size: 1.3rem; font-weight: 700; color: #e8d5b5;
+}
+.countdown.expired { color: #e74c3c !important; }
+.countdown.urgent { color: #f39c12 !important; }
 
 .analog-clocks {
     display: flex;

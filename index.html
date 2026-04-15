@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Fernschach</title>
-    <link rel="stylesheet" href="style.css?v=14">
+    <link rel="stylesheet" href="style.css?v=15">
 </head>
 <body>
     <div class="app">
@@ -38,21 +38,25 @@
                             <div class="dial-caption" id="hours-caption">0 &ndash; 12 h</div>
                         </div>
                     </div>
-                    <div class="clock-row big">
-                        <div class="clock-label" id="countdown-label">Weiss</div>
-                        <div class="clock-value countdown" id="countdown">&mdash;</div>
+                    <div class="clock-grid top">
+                        <div class="clock-cell big">
+                            <div class="clock-label" id="countdown-label">Weiss am Zug</div>
+                            <div class="clock-value countdown" id="countdown">&mdash;</div>
+                        </div>
+                        <div class="clock-cell">
+                            <div class="clock-label">Frist bis</div>
+                            <div class="clock-value" id="deadline-time">&mdash;</div>
+                        </div>
                     </div>
-                    <div class="clock-row">
-                        <div class="clock-label">Spielstart</div>
-                        <div class="clock-value" id="game-start">&mdash;</div>
-                    </div>
-                    <div class="clock-row">
-                        <div class="clock-label">Letzter Zug</div>
-                        <div class="clock-value" id="last-move-time">&mdash;</div>
-                    </div>
-                    <div class="clock-row">
-                        <div class="clock-label">Frist bis</div>
-                        <div class="clock-value" id="deadline-time">&mdash;</div>
+                    <div class="clock-grid">
+                        <div class="clock-cell">
+                            <div class="clock-label">Spielstart</div>
+                            <div class="clock-value" id="game-start">&mdash;</div>
+                        </div>
+                        <div class="clock-cell">
+                            <div class="clock-label">Letzter Zug</div>
+                            <div class="clock-value" id="last-move-time">&mdash;</div>
+                        </div>
                     </div>
                     <div class="clock-row">
                         <label class="clock-label" for="move-duration">Zugdauer</label>
@@ -134,6 +138,6 @@
 
     <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-database-compat.js"></script>
-    <script src="chess.js?v=14"></script>
+    <script src="chess.js?v=15"></script>
 </body>
 </html>
