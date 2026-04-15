@@ -1570,19 +1570,24 @@ class TheoryPanel {
         this.listEl.innerHTML = '';
         for (const m of moves) {
             const wr = parseFloat(m.winrate);
-            const wrW = isFinite(wr) ? wr : 50;
-            const wrB = 100 - wrW;
+            const cp = Number(m.score) || 0;
+            // Logistic expected-score from cp (Elo-style): W = 1 / (1 + 10^(-cp/400))
+            const ws = 1 / (1 + Math.pow(10, -cp / 400));
+            const wsPct = ws * 100;
+            const bsPct = 100 - wsPct;
             const note = (m.note || '').trim();
-            const scoreLabel = (m.score > 0 ? '+' : '') + m.score + ' cp';
+            const scoreLabel = (cp > 0 ? '+' : '') + cp + ' cp';
+            const wrLabel = isFinite(wr) ? wr.toFixed(2) + '%' : '';
             const row = document.createElement('div');
             row.className = 'theory-row';
-            row.title = `${m.san} ${note}  |  Score ${scoreLabel}  |  Winrate Weiss ${wrW.toFixed(1)}%`;
+            row.title = `${m.san} ${note}  |  Score ${scoreLabel}  |  Erwartung Weiss ${wsPct.toFixed(1)}%  |  DB-Winrate ${wrLabel}`;
             row.innerHTML = `
                 <div class="theory-san">${m.san} <span style="color:#aaa;font-weight:400">${note}</span></div>
                 <div class="theory-games">${scoreLabel}</div>
-                <div class="theory-bar">
-                    <div class="bw" style="width:${wrW}%"><span>${wrW.toFixed(0)}%</span></div>
-                    <div class="bb" style="width:${wrB}%"><span>${wrB.toFixed(0)}%</span></div>
+                <div class="theory-bar eval">
+                    <div class="bw" style="width:${wsPct}%"></div>
+                    <div class="bb" style="width:${bsPct}%"></div>
+                    <span class="eval-label">${scoreLabel}</span>
                 </div>
             `;
             row.addEventListener('click', () => {

@@ -429,18 +429,30 @@ header h1 {
 .theory-san { color: #e8d5b5; font-weight: 700; font-size: 0.95rem; }
 .theory-games { color: #888; font-size: 0.78rem; text-align: right; }
 .theory-bar {
-    height: 14px; display: flex; overflow: hidden;
+    height: 16px; display: flex; overflow: hidden;
     border-radius: 3px; background: #0e1530;
+    position: relative;
 }
 .theory-bar .bw { background: #f0d9b5; }
 .theory-bar .bd { background: #7a7a8a; }
-.theory-bar .bb { background: #3a3a4a; }
-.theory-bar span {
-    font-size: 0.7rem; color: #111; text-align: center;
-    line-height: 14px; font-weight: 700;
-    min-width: 0; overflow: hidden; white-space: nowrap;
+.theory-bar .bb { background: #2a2a3a; }
+.theory-bar .eval-label {
+    position: absolute;
+    left: 50%; top: 50%; transform: translate(-50%, -50%);
+    font-size: 0.72rem; font-weight: 700;
+    color: #e8d5b5;
+    text-shadow: 0 0 3px #000, 0 0 2px #000;
+    pointer-events: none;
+    white-space: nowrap;
 }
-.theory-bar .bb span, .theory-bar .bd span { color: #ddd; }
+/* Center tick mark at 50% for evaluation bar */
+.theory-bar.eval::before {
+    content: '';
+    position: absolute;
+    left: 50%; top: -2px; bottom: -2px;
+    width: 1px; background: #555;
+    pointer-events: none;
+}
 
 /* Responsive */
 @media (max-width: 1200px) {
