@@ -1015,8 +1015,27 @@ class ChessUI {
         }
     }
 
+    // Laufende Flip-Animation abbrechen und Brett sofort korrekt ausrichten
+    cancelFlip() {
+        this._flipCancelled = true;
+        this._flipping = false;
+        // Overlay-Szene entfernen falls vorhanden
+        const scene = this.boardEl.parentElement.querySelector('.flip-3d-scene');
+        if (scene) scene.remove();
+        this.boardEl.style.visibility = 'visible';
+        // Korrekten Flip-Zustand setzen
+        const want = this.manualFlip ? this.flipped : (this.game.turn === 'black');
+        if (this.flipped !== want) {
+            this.flipped = want;
+            this.updateCoords();
+        }
+        this.renderBoard();
+        if (this.analysis) this.analysis.onMainUpdated();
+    }
+
     // Gemeinsame Abschluss-Logik nach jeder Dreh-Animation
     finishFlip(scene, newFlipped, onDone) {
+        if (this._flipCancelled) { this._flipCancelled = false; return; }
         const container = this.boardEl.parentElement;
         if (scene.parentElement) container.removeChild(scene);
         this.flipped = newFlipped;
@@ -1050,6 +1069,7 @@ class ChessUI {
 
         const t0 = performance.now();
         const tick = (now) => {
+            if (this._flipCancelled) return;
             const elapsed = now - t0;
             const deg = Math.min(180, (elapsed / durationMs) * 180);
             rotator.style.transform = 'rotate' + axis + '(' + deg + 'deg)';
@@ -1076,6 +1096,7 @@ class ChessUI {
 
         const t0 = performance.now();
         const tick = (now) => {
+            if (this._flipCancelled) return;
             const elapsed = now - t0;
             const deg = Math.min(180, (elapsed / durationMs) * 180);
             scene.style.transform = 'rotateZ(' + deg + 'deg)';
@@ -1204,6 +1225,7 @@ class ChessUI {
             this.selectedSquare = null;
             this.validMoves = [];
             this.clearError();
+            if (this._flipping) this.cancelFlip();
             this.render();
             this.saveToStorage();
         }
@@ -1211,6 +1233,7 @@ class ChessUI {
 
     onReset() {
         if (this.game.moveHistory.length > 0 && !confirm('Neues Spiel starten? Alle Zuege gehen verloren.')) return;
+        if (this._flipping) this.cancelFlip();
         this.game.reset();
         this.startTime = null;
         this.moveTs = [];
