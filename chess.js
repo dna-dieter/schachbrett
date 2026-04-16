@@ -962,6 +962,16 @@ class ChessUI {
         const axis = this.getFlipAxis();
         const duration = this.getFlipDuration();
 
+        if (duration <= 0) {
+            // Instantan: sofort umschalten, keine Animation, kein Delay
+            this.flipped = want;
+            this.updateCoords();
+            this.renderBoard();
+            if (this.analysis) this.analysis.onMainUpdated();
+            this._flipping = false;
+            return;
+        }
+
         // 0.8s pause damit der letzte Zug sichtbar ist, dann 3D-Drehung
         setTimeout(() => this.animateFlip3D(want, duration, axis, () => {
             this._flipping = false;
