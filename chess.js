@@ -969,6 +969,14 @@ class ChessUI {
     }
 
     animateFlip3D(newFlipped, durationMs, axis, onDone) {
+        if (durationMs <= 0) {
+            this.flipped = newFlipped;
+            this.updateCoords();
+            this.renderBoard();
+            if (this.analysis) this.analysis.onMainUpdated();
+            if (onDone) onDone();
+            return;
+        }
         if (axis === 'Z') {
             this.animateFlipZ(newFlipped, durationMs, onDone);
         } else {
